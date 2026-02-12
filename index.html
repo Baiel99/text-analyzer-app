@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Analyzer Pro</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f172a">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter, sans-serif;}
+
+body{
+background: linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+
+.container{
+width:100%;
+max-width:700px;
+background: rgba(255,255,255,0.05);
+backdrop-filter: blur(20px);
+border-radius:20px;
+padding:25px;
+box-shadow:0 0 40px rgba(0,255,255,0.2);
+animation:fade 0.8s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+font-weight:700;
+}
+
+textarea{
+width:100%;
+height:180px;
+border-radius:15px;
+border:none;
+padding:15px;
+font-size:16px;
+resize:none;
+outline:none;
+background:rgba(255,255,255,0.1);
+color:white;
+}
+
+button{
+margin-top:15px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+font-size:16px;
+cursor:pointer;
+background:linear-gradient(90deg,#00f5ff,#00ff94);
+color:black;
+font-weight:600;
+transition:0.3s;
+}
+
+button:hover{
+transform:scale(1.03);
+}
+
+.results{
+margin-top:20px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.card{
+background:rgba(255,255,255,0.08);
+padding:15px;
+border-radius:15px;
+text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>🚀 Text Analyzer Pro</h1>
+
+<textarea id="text" placeholder="Вставьте HTML или текст..."></textarea>
+<button onclick="analyze()">Анализировать</button>
+
+<div class="results">
+<div class="card"><b>Слова</b><div id="words">0</div></div>
+<div class="card"><b>Символы</b><div id="chars">0</div></div>
+<div class="card"><b>Вода %</b><div id="water">0%</div></div>
+<div class="card"><b>Title</b><div id="titleCheck">-</div></div>
+</div>
+</div>
+
+<script>
+function analyze(){
+let text = document.getElementById("text").value;
+
+let words = text.trim().split(/\s+/).filter(Boolean);
+let waterWords = ["и","в","на","с","что","как","это","а","но"];
+let waterCount = words.filter(w=>waterWords.includes(w.toLowerCase())).length;
+
+document.getElementById("words").innerText = words.length;
+document.getElementById("chars").innerText = text.length;
+document.getElementById("water").innerText = words.length ? ((waterCount/words.length)*100).toFixed(1)+"%" : "0%";
+
+let titleMatch = text.match(/<title>(.*?)<\/title>/);
+document.getElementById("titleCheck").innerText = titleMatch ? "Есть ✅" : "Нет ❌";
+
+localStorage.setItem("lastText",text);
+}
+
+if(localStorage.getItem("lastText")){
+document.getElementById("text").value = localStorage.getItem("lastText");
+}
+
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js');
+}
+</script>
+
+</body>
+</html>
